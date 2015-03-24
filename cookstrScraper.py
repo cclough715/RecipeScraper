@@ -30,21 +30,18 @@ def get_recipe(url):
 	soup = bs4.BeautifulSoup(response.data)
 	
 	#scrape recipe information
-	chicken_noodle = soup.findAll('span', {"itemprop" : "name"})
-	name = BeautifulSoup(str(chicken_noodle)).get_text()
-	
-	chicken_noodle = soup.findAll('span', {"itemprop" : "author"})
-	author = BeautifulSoup(str(chicken_noodle)).get_text()
+	name = soup.findAll('span', {"itemprop" : "name"})[0].text
+	author =  soup.findAll('span', {"itemprop" : "author"})[0].text
 	
 	dish = Recipe(name, author)
 	
 	attributes = soup.findAll('span', {'class' : "attr value"})
 	for attribute in attributes:
-		dish.add_attribute(attribute)
+		dish.add_attribute(attribute.text)
 	
 	ingredients = soup.findAll('span', {"class" : "ingredient"})
 	for ingredient in ingredients:
-		dish.add_ingredient(ingredient)
+		dish.add_ingredient(ingredient.text)
 		
 	return dish
 	
@@ -56,7 +53,13 @@ class Recipe:
 		self.ingredients = []
 	
 	def __str__(self):
-		return str(self.name) + " by: " + str(self.author)
+		obj = str(self.name) + " by: " + str(self.author) + "\nattributes: "
+		for attribute in self.attributes:
+			obj = obj + str(attribute) + ", "
+		obj = obj + "\ningredients: "
+		for ingredient in self.ingredients:
+			obj = obj + str(ingredient) + ", "
+		return obj
 		
 	def add_ingredient(self, ingredient):
 		self.ingredients.append(ingredient)
