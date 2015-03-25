@@ -82,7 +82,6 @@ def get_recipes(n):
             A list of recipes
 	"""
     url = 'http://www.cookstr.com/searches/surprise'
-    soup = get_cookstr_data(url)
     recipe_list = list()
     
     #retrieve the recipes
@@ -98,9 +97,7 @@ def get_recipes(n):
         time.sleep(0.25) #prevent ddos
     except Exception, e:
         print("Error = " + str(e))
-        
-        
-        
+
     return recipe_list
 		
 if __name__ == '__main__':
