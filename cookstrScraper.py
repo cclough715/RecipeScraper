@@ -55,19 +55,23 @@ def get_recipe(url):
         Returns:	
             A recipe object with the recipe scraped from the url
     """
-    soup = get_cookstr_data(url)
+    chicken_noodle = get_cookstr_data(url)
 
     #scrape recipe information
-    name = soup.findAll('span', {"itemprop" : "name"})[0].text
-    author =  soup.findAll('span', {"itemprop" : "author"})[0].text
-    
+    try:
+        name = chicken_noodle.findAll('span', {"itemprop" : "name"})[0].text
+        author =  chicken_noodle.findAll('span', {"itemprop" : "author"})[0].text
+    except Exception, e:
+        print("Error = " + str(e))
+        return
+        
     dish = Recipe(name, author)
     
-    attributes = soup.findAll('span', {'class' : "attr value"})
+    attributes = chicken_noodle.findAll('span', {'class' : "attr value"})
     for attribute in attributes:
         dish.add_attribute(attribute.text)
 
-    ingredients = soup.findAll('span', {"class" : "ingredient"})
+    ingredients = chicken_noodle.findAll('span', {"class" : "ingredient"})
     for ingredient in ingredients:
         dish.add_ingredient(ingredient.text)
 
@@ -95,22 +99,24 @@ def get_recipes(n):
             dish = get_recipe(url)
             #check for duplicate recipes
             if dish in recipe_list:
-                i = i - 1
+                n = n + 1
                 continue
             else:
                 recipe_list.append(dish)
                 time.sleep(0.25) #prevent ddos
         except Exception, e:
             print("Error = " + str(e))
+            n = n + 1
 
     return recipe_list
 		
 if __name__ == '__main__':
-    recipes = get_recipes(1000)
-    save_object(recipes, 'recipes.p')
+    #recipes = get_recipes(1000)
+    #save_object(recipes, 'recipes.p')
     
     file = open("recipes.p", 'rb')
     object_file = pickle.load(file)
     for r in object_file:
         print r
         print '\n'
+    print len(object_file)
