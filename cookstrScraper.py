@@ -6,6 +6,7 @@ import urllib3
 import bs4
 from bs4 import BeautifulSoup
 import time
+from datetime import datetime
 import pickle
 
 
@@ -81,7 +82,7 @@ def save_object(obj, path):
     with open(path, 'wb') as output:
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
     
-def get_recipes(n):
+def get_random_recipes(n):
     """
         Gets n recipes from cookstr
 
@@ -109,15 +110,44 @@ def get_recipes(n):
             n = n + 1
 
     return recipe_list
-		
+    
+def get_recipes(query):
+    page = 1
+    url = 'http://www.cookstr.com/searches?page=' + str(page) + '&query=' + query
+    
+    recipes = list()
+    chicken_noodle = get_cookstr_data(url)
+    
+    last_page = chicken_noodle.findAll('span', {"class" : "next_page disabled"})  
+    while len(last_page) == 0:
+    
+        #grab each recipe on this search page
+        recipe_links = chicken_noodle.findAll('p', {"class" : "recipe_title"})
+        for link in recipe_links:
+            recipe_url = 'http://www.cookstr.com' + link.find('a').get('href')
+            recipes.append(get_recipe(recipe_url))
+        
+        #get next page
+        page = page + 1
+        url = 'http://www.cookstr.com/searches?page=' + str(page) + '&query=' + query
+        chicken_noodle = get_cookstr_data(url)
+        last_page = chicken_noodle.findAll('span', {"class" : "next_page disabled"})  
+    
+    return recipes
+
 if __name__ == '__main__':
+    query = 'asian'
+
+    start = str(datetime.now())
+    recipes = get_recipes(query)
+    end = str(datetime.now())
     
-    #recipes = get_recipes(1000)
-    #save_object(recipes, 'recipes.p')
+    save_object(recipes, query + '.p')
     
-    file = open("recipes.p", 'rb')
+    file = open(query + '.p', 'rb')
     object_file = pickle.load(file)
     for r in object_file:
         print r
         print '\n'
     print len(object_file)
+    print("Start time: %s\nEnd time: %s" % (start, end))
