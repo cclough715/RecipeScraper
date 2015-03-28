@@ -47,7 +47,7 @@ def get_cookstr_data(url):
     return bs4.BeautifulSoup(response.data)
 		
 def get_recipe(url):
-    """
+    '''
         Gets a recipe from cookstr
 
         Args:
@@ -55,7 +55,8 @@ def get_recipe(url):
 
         Returns:	
             A recipe object with the recipe scraped from the url
-    """
+    '''
+    
     chicken_noodle = get_cookstr_data(url)
 
     #scrape recipe information
@@ -83,14 +84,14 @@ def save_object(obj, path):
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
     
 def get_random_recipes(n):
-    """
+    '''
         Gets n recipes from cookstr
 
         Args:
             n: The number of recipes to scrape
         returns:
             A list of recipes
-	"""
+	'''
     url = 'http://www.cookstr.com/searches/surprise'
     recipe_list = list()
     
