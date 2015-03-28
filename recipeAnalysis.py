@@ -1,3 +1,8 @@
+# Author:   Chad Clough
+#           github/cclough715
+#
+# Created:  3/27/2015
+
 from cookstrScraper import Recipe
 from collections import Counter
 import pickle
