@@ -42,9 +42,9 @@ def get_recipes(recipeFile, most_freq_ingr):
     
 
 if __name__ == '__main__':
-    file = open("asian.p", 'rb')
+    file = open("desert.p", 'rb')
     object_file = pickle.load(file)
-    numIng = 11
+    numIng = 40
     
     most_freq_ingr = get_ingr_freq(object_file, numIng)
     recipe_list = get_recipes(object_file, most_freq_ingr)

@@ -123,6 +123,7 @@ def get_recipes(query):
     while len(last_page) == 0:
     
         #grab each recipe on this search page
+        print ("Scraping page %d" % (page))
         recipe_links = chicken_noodle.findAll('p', {"class" : "recipe_title"})
         for link in recipe_links:
             recipe_url = 'http://www.cookstr.com' + link.find('a').get('href')
@@ -137,7 +138,7 @@ def get_recipes(query):
     return recipes
 
 if __name__ == '__main__':
-    query = 'asian'
+    query = 'desert'
 
     start = str(datetime.now())
     recipes = get_recipes(query)
