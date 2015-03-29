@@ -65,9 +65,8 @@ def get_recipes(category):
     url = 'http://www.allrecipes.com/Recipes/' +category
     soup = recipeScraper.get_soup_data(url)
     has_recipes = True
-    #strong = soup.findAll('span', {"class" : "strong"})
-    #if we're on the last page both the page number and next will have a strong class
-    while has_recipes:#len(strong) == 1 or page == 1:
+
+    while has_recipes:
         print ("Scraping page: %d..." % (page))
         #grab each recipe on this search page
         recipe_links = soup.findAll('a', {"class" : "title"})
@@ -82,10 +81,6 @@ def get_recipes(category):
             soup = recipeScraper.get_soup_data(url)
         else:
             has_recipes = False
-                
-        #get next page
-        
-        #strong = soup.findAll('span', {"class" : "strong"})
     
     return recipes
 	
