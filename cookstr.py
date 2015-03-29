@@ -3,13 +3,12 @@
 #
 # Created:  3/23/2015
 
+import argparse
 import urllib3
 import bs4
 from bs4 import BeautifulSoup
-import time
 from datetime import datetime
 import recipeScraper
-import pickle
 
 
 def get_recipe(url):
@@ -37,15 +36,15 @@ def get_recipe(url):
         print ("\tError: Author not found")
         author = 'N/A'
         
-    dish = recipeScraper.Recipe(name, author)
+    dish = recipeScraper.Recipe(encode(name), encode(author))
     
     attributes = soup.findAll('span', {'class' : "attr value"})
     for attribute in attributes:
-        dish.add_attribute(attribute.text)
+        dish.add_attribute(encode(attribute.text))
 
     ingredients = soup.findAll('span', {"class" : "ingredient"})
     for ingredient in ingredients:
-        dish.add_ingredient(ingredient.text)
+        dish.add_ingredient(encode(ingredient.text))
 
     return dish
     
@@ -108,8 +107,12 @@ def get_recipes(query):
     
     return recipes
 
+def encode(text):
+    return text.encode('ascii', 'ignore')
+    
 if __name__ == '__main__':
-    query = 'desert'
+    #TODO: Add a parser
+    query = 'german'
     print ("Scraping cookstr for query: '%s'\nThis may take a while...\n" % (query))
     
     start   = datetime.now()

@@ -14,8 +14,8 @@ http = urllib3.PoolManager()
 
 class Recipe:
     def __init__(self, name, author):
-        self.name = name.encode('ascii', 'ignore')
-        self.author = author.encode('ascii', 'ignore')
+        self.name = name
+        self.author = author
         self.attributes = []
         self.ingredients = []
 
@@ -29,10 +29,10 @@ class Recipe:
         return obj
 		
     def add_ingredient(self, ingredient):
-        self.ingredients.append(ingredient.encode('ascii', 'ignore'))
+        self.ingredients.append(ingredient)
 
     def add_attribute(self, attribute):
-        self.attributes.append(attribute.encode('ascii', 'ignore'))
+        self.attributes.append(attribute)
 
         
 
