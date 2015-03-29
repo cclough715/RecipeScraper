@@ -62,10 +62,11 @@ def get_recipes(recipeFile, inventory):
                 invalid_ingr = False
             
     return recipe_list
-    
+  
+  
 
 if __name__ == '__main__':
-    object_file = recipeScraper.get_object('desert.p')
+    object_file = recipeScraper.get_object('Main-Dish_Ribs.p')
     numIng = 40 #we're going to use the 40 most common found ingredients
     
     most_freq_ingr = get_ingr_freq(object_file, numIng)
