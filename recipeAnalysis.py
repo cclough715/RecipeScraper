@@ -3,11 +3,20 @@
 #
 # Created:  3/27/2015
 
-from cookstrScraper import Recipe
+import recipeScraper
+from recipeScraper import Recipe
 from collections import Counter
-import pickle
 
 def get_ingr_freq(recipeFile, num_most_ing):
+    ''' Finds the most frequent ingredients in file with a list of Recipes
+        
+        Args:
+            recipeFile: A serialized list of Recipes
+            num_most_ing: The number of frequent ingredients we're looking for
+        
+        Returns:
+            A dictionary with [num_most_ing] ingredients and the percentage of recipes that ingredient is found in
+    '''
     ingr_list = list()
     
     for recipe in recipeFile:
@@ -25,7 +34,16 @@ def get_ingr_freq(recipeFile, num_most_ing):
            
     return keyingr
      
-def get_recipes(recipeFile, most_freq_ingr):
+def get_recipes(recipeFile, inventory):
+    ''' Gets a list of recipes that only use ingredients in our inventory
+    
+        Args:
+            recipeFile: a serialized list of all of the recipes we're going to use
+            inventory: a list of all the ingredients we can use to make our recipes
+        
+        Returns:
+            list; A list of recipes that only use ingredients in our inventory
+    '''
     ingr_list = list()
     recipe_list = list()
     
@@ -35,7 +53,7 @@ def get_recipes(recipeFile, most_freq_ingr):
         if recipe is not None:
             ingredients = getattr(recipe, 'ingredients')
             for ingredient in ingredients:
-                if ingredient not in most_freq_ingr:
+                if ingredient not in inventory:
                     invalid_ingr = True
             
             if not invalid_ingr:
@@ -47,9 +65,8 @@ def get_recipes(recipeFile, most_freq_ingr):
     
 
 if __name__ == '__main__':
-    file = open("desert.p", 'rb')
-    object_file = pickle.load(file)
-    numIng = 40
+    object_file = recipeScraper.get_object('desert.p')
+    numIng = 40 #we're going to use the 40 most common found ingredients
     
     most_freq_ingr = get_ingr_freq(object_file, numIng)
     recipe_list = get_recipes(object_file, most_freq_ingr)
@@ -62,5 +79,3 @@ if __name__ == '__main__':
         print "\n"
         
     print ("Number of ingredients: %d\nNumber of recipes found: %d" % (numIng, len(recipe_list)))
-    
-    print len(recipe_list)

@@ -109,7 +109,7 @@ def get_recipes(query):
     return recipes
 
 if __name__ == '__main__':
-    query = 'german'
+    query = 'desert'
     print ("Scraping cookstr for query: '%s'\nThis may take a while...\n" % (query))
     
     start   = datetime.now()
