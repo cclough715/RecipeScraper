@@ -71,10 +71,16 @@ def get_recipes(category):
         #grab each recipe on this search page
         recipe_links = soup.findAll('a', {"class" : "title"})
         
+        #BUG: check to make sure class is not 'coll-info' this currently 
+        #grabs collections and treats them as recipes
+        
+        #BUG: check to see if the id contains 'StaffPicks' these recipes
+        #are currently being counted twice
         if len(recipe_links) > 0:
             for link in recipe_links:
                 if link is not None:
                     recipe_url = 'http://www.allrecipes.com' + link.get('href')
+                    print recipe_url
                     recipes.append(get_recipe(recipe_url))
             page = page + 1
             url = 'http://allrecipes.com/Recipes/' +category +'/main.aspx?Page=' + str(page)
@@ -89,7 +95,7 @@ def encode(text):
     
 if __name__ == '__main__':
     #TODO: Add a parser 
-    category = "Main-Dish/Ribs"
+    category = "appetizers-and-snacks"
     print ("Scraping allrecipes for category: '%s' \nThis may take a while...\n" % (category))
     
     start   = datetime.now()
