@@ -115,16 +115,3 @@ def get_recipes(query):
 
 def encode(text):
     return text.encode('ascii', 'ignore')
-    
-if __name__ == '__main__':
-    query = 'german'
-    print ("Scraping cookstr for query: '%s'\nThis may take a while...\n" % (query))
-    
-    start   = datetime.now()
-    recipes = get_recipes(query)
-    end     = datetime.now()
-    elapsed = end - start #calculate total scrape time
-    
-    #save our recipes to a file
-    recipeScraper.save_object(recipes, query + '.p')
-    
