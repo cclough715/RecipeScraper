@@ -38,13 +38,19 @@ def get_recipe(url):
         
     dish = recipeScraper.Recipe(encode(name), encode(author))
     
+    #scrape attributes for recipe
     attributes = soup.findAll('span', {'class' : "attr value"})
     for attribute in attributes:
         dish.add_attribute(encode(attribute.text))
+    if len(attributes) == 0:
+        print ("\tError: No attributes found")
 
+    #gather ingredient list for recipe
     ingredients = soup.findAll('span', {"class" : "ingredient"})
     for ingredient in ingredients:
         dish.add_ingredient(encode(ingredient.text))
+    if len(ingredients) == 0:
+        print ("\tError: No ingredients found. Something's wrong here...")
 
     return dish
     

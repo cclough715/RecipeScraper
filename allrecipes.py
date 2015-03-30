@@ -32,6 +32,7 @@ def get_recipe(url):
         
     dish = recipeScraper.Recipe(encode(name), encode(author))
     
+    #scrape nutritional information
     nutrition = soup.findAll('ul', {'id' : 'ulNutrient'})
     nutrition_info = []
     for nutrient in nutrition:
@@ -40,12 +41,16 @@ def get_recipe(url):
         nutrient_info['amount'] = encode(nutrient.find('span', {'id' : 'lblNutrientValue'}).text)
         nutrient_info['percent'] = encode(nutrient.find('li', {'class' : 'percentages'}).text)
         nutrition_info.append(nutrient_info)
-    
     dish.add_attribute(nutrition_info)
-    
+    if len(nutrient_info) == 0:
+        print ("\tError: No nutritional information is available")
+        
+    #gather ingredient list for recipe
     ingredients = soup.findAll('span', {"class" : "ingredient-name"})
     for ingredient in ingredients:
         dish.add_ingredient(encode(ingredient.text))
+    if len(ingredients) == 0:
+        print ("\tError: No ingredients found. Something's wrong here...")
 
     return dish
     
@@ -72,6 +77,7 @@ def get_recipes(category):
         
         if len(recipe_links) > 0:
             only_collections_left = True
+            #scrape each recipe on this page
             for link in recipe_links:
                 if link is not None:
                      #ensure we don't count staff picks twice and we're not selecting a collection
@@ -79,7 +85,7 @@ def get_recipes(category):
                         recipe_url = 'http://www.allrecipes.com' + link.get('href')
                         recipes.append(get_recipe(recipe_url))
                         only_collections_left = False
-                    
+            #get next page
             page = page + 1
             url = 'http://allrecipes.com/Recipes/' + category +'/main.aspx?Page=' + str(page)
             soup = recipeScraper.get_soup_data(url)
