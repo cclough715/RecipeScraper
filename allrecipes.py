@@ -74,14 +74,16 @@ def get_recipes(category):
         #BUG: check to make sure class is not 'coll-info' this currently 
         #grabs collections and treats them as recipes
         
-        #BUG: check to see if the id contains 'StaffPicks' these recipes
-        #are currently being counted twice
         if len(recipe_links) > 0:
             for link in recipe_links:
+                #print link
                 if link is not None:
-                    recipe_url = 'http://www.allrecipes.com' + link.get('href')
-                    print recipe_url
-                    recipes.append(get_recipe(recipe_url))
+                    if('StaffPicks' not in link['id']): #ensure we don't count staff picks twice
+                        recipe_url = 'http://www.allrecipes.com' + link.get('href')
+                        recipes.append(get_recipe(recipe_url))
+                    else:
+                        print "StaffPicks is in link.id"
+                    
             page = page + 1
             url = 'http://allrecipes.com/Recipes/' +category +'/main.aspx?Page=' + str(page)
             soup = recipeScraper.get_soup_data(url)
@@ -95,7 +97,7 @@ def encode(text):
     
 if __name__ == '__main__':
     #TODO: Add a parser 
-    category = "appetizers-and-snacks"
+    category = "Main-Dish/Ribs"
     print ("Scraping allrecipes for category: '%s' \nThis may take a while...\n" % (category))
     
     start   = datetime.now()
