@@ -71,18 +71,14 @@ def get_recipes(category):
         #grab each recipe on this search page
         recipe_links = soup.findAll('a', {"class" : "title"})
         
-        #BUG: check to make sure class is not 'coll-info' this currently 
-        #grabs collections and treats them as recipes
-        
         if len(recipe_links) > 0:
             for link in recipe_links:
                 #print link
                 if link is not None:
-                    if('StaffPicks' not in link['id']): #ensure we don't count staff picks twice
+                     #ensure we don't count staff picks twice and we're not selecting a collection
+                    if('StaffPicks' not in link['id'] and 'browsedeeper' not in link['href']):
                         recipe_url = 'http://www.allrecipes.com' + link.get('href')
                         recipes.append(get_recipe(recipe_url))
-                    else:
-                        print "StaffPicks is in link.id"
                     
             page = page + 1
             url = 'http://allrecipes.com/Recipes/' +category +'/main.aspx?Page=' + str(page)
@@ -97,7 +93,7 @@ def encode(text):
     
 if __name__ == '__main__':
     #TODO: Add a parser 
-    category = "Main-Dish/Ribs"
+    category = "Main-Dish"
     print ("Scraping allrecipes for category: '%s' \nThis may take a while...\n" % (category))
     
     start   = datetime.now()
