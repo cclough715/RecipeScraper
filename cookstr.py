@@ -111,7 +111,6 @@ def encode(text):
     return text.encode('ascii', 'ignore')
     
 if __name__ == '__main__':
-    #TODO: Add a parser
     query = 'german'
     print ("Scraping cookstr for query: '%s'\nThis may take a while...\n" % (query))
     
@@ -123,18 +122,3 @@ if __name__ == '__main__':
     #save our recipes to a file
     recipeScraper.save_object(recipes, query + '.p')
     
-    #read back the recipes we just scraped
-    savedRecipes = recipeScraper.get_object(query + '.p')
-    for r in savedRecipes:
-        print r
-        print '\n'
-
-    print ("Number of recipes found: %d" % (len(savedRecipes)))
-
-    #display total scrape time
-    days    = divmod(elapsed.total_seconds(), 86400)
-    hours   = divmod(days[1], 3600)
-    minutes = divmod(hours[1], 60)
-    seconds = minutes[1]
-    print ("Total scrape time: %d days, %d hours, %d minutes, %d seconds" % 
-        (days[0], hours[0], minutes[0], seconds))

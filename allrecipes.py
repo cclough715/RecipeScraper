@@ -3,11 +3,9 @@
 #
 # Created:  3/28/2015
 
-import argparse
 import urllib3
 import bs4
 from bs4 import BeautifulSoup
-from datetime import datetime
 import recipeScraper
 
 def get_recipe(url):
@@ -81,7 +79,7 @@ def get_recipes(category):
                         recipes.append(get_recipe(recipe_url))
                     
             page = page + 1
-            url = 'http://allrecipes.com/Recipes/' +category +'/main.aspx?Page=' + str(page)
+            url = 'http://allrecipes.com/Recipes/' + category +'/main.aspx?Page=' + str(page)
             soup = recipeScraper.get_soup_data(url)
         else:
             has_recipes = False
@@ -90,34 +88,4 @@ def get_recipes(category):
 	
 def encode(text):
     return text.encode('ascii', 'ignore')
-    
-if __name__ == '__main__':
-    #TODO: Add a parser 
-    category = "Main-Dish"
-    print ("Scraping allrecipes for category: '%s' \nThis may take a while...\n" % (category))
-    
-    start   = datetime.now()
-    recipes = get_recipes(category)
-    end     = datetime.now()
-    elapsed = end - start #calculate total scrape time
-    
-    #save our recipes to a file
-    file_name = category.replace('/', '_')
-    recipeScraper.save_object(recipes, file_name + '.p')
-    
-    #read back the recipes we just scraped
-    savedRecipes = recipeScraper.get_object(file_name + '.p')
-    for r in savedRecipes:
-        print r
-        print '\n'
-
-    print ("Number of recipes found: %d" % (len(savedRecipes)))
-
-    #display total scrape time
-    days    = divmod(elapsed.total_seconds(), 86400)
-    hours   = divmod(days[1], 3600)
-    minutes = divmod(hours[1], 60)
-    seconds = minutes[1]
-    print ("Total scrape time: %d days, %d hours, %d minutes, %d seconds" % 
-        (days[0], hours[0], minutes[0], seconds))
     
