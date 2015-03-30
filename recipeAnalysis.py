@@ -8,6 +8,9 @@ import recipeScraper
 from recipeScraper import Recipe
 from collections import Counter
 
+allrecipes_stop_words = set(['or', 'as', 'needed', 'fresh', 'to', 'taste', ', ', 
+    'chopped', 'grated', 'minced'])
+
 def get_ingr_freq(recipeFile, num_most_ing):
     ''' Finds the most frequent ingredients in file with a list of Recipes
         
