@@ -67,7 +67,14 @@ def get_recipes(recipeFile, inventory):
   
 
 if __name__ == '__main__':
-    object_file = recipeScraper.get_object('Main-Dish_Ribs.p')
+    parser = argparse.ArgumentParser(description='Analyses recipe lists to find the most common'
+        + ' ingredients and finds recipes that use only those ingredients')
+
+    parser.add_argument('filepath', type=str)
+    args = parser.parse_args()
+    path = args.filepath
+    
+    object_file = recipeScraper.get_object(path)
     numIng = 40 #we're going to use the 40 most common found ingredients
     
     most_freq_ingr = get_ingr_freq(object_file, numIng)
