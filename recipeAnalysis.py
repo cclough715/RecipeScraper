@@ -3,6 +3,7 @@
 #
 # Created:  3/27/2015
 
+import argparse
 import recipeScraper
 from recipeScraper import Recipe
 from collections import Counter

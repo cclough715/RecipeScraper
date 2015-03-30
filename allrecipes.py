@@ -63,6 +63,7 @@ def get_recipes(category):
     url = 'http://www.allrecipes.com/Recipes/' +category
     soup = recipeScraper.get_soup_data(url)
     has_recipes = True
+    only_collections_left = False
 
     while has_recipes:
         print ("Scraping page: %d..." % (page))
@@ -70,18 +71,22 @@ def get_recipes(category):
         recipe_links = soup.findAll('a', {"class" : "title"})
         
         if len(recipe_links) > 0:
+            only_collections_left = True
             for link in recipe_links:
-                #print link
                 if link is not None:
                      #ensure we don't count staff picks twice and we're not selecting a collection
                     if('StaffPicks' not in link['id'] and 'browsedeeper' not in link['href']):
                         recipe_url = 'http://www.allrecipes.com' + link.get('href')
                         recipes.append(get_recipe(recipe_url))
+                        only_collections_left = False
                     
             page = page + 1
             url = 'http://allrecipes.com/Recipes/' + category +'/main.aspx?Page=' + str(page)
             soup = recipeScraper.get_soup_data(url)
         else:
+            has_recipes = False
+        
+        if only_collections_left:
             has_recipes = False
     
     return recipes
