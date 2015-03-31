@@ -5,8 +5,10 @@
 
 import argparse
 import recipeScraper
+import allrecipes
 from recipeScraper import Recipe
 from collections import Counter
+import csv
 
 allrecipes_stop_words = set(['or', 'as', 'needed', 'fresh', 'to', 'taste', ', ', 
     'chopped', 'grated', 'minced', 'shredded', 'all-purpose', 'ground', 'dried', 
@@ -73,22 +75,37 @@ def get_recipes(recipeFile, inventory):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Analyses recipe lists to find the most common'
         + ' ingredients and finds recipes that use only those ingredients')
+        
+    parser.add_argument('--cookstr', '-c',
+        action  = 'store_true',
+        help    = 'scrapes cookstr instead of allrecipes')
+        
+    parser.add_argument('--csv',
+        action  = 'store_true',
+        help    = 'converts a pickle file into a csv file')
 
     parser.add_argument('filepath', type=str)
     args = parser.parse_args()
     path = args.filepath
     
-    object_file = recipeScraper.get_object(path)
-    numIng = 40 #we're going to use the 40 most common found ingredients
+    object_file = recipeScraper.get_object(path + '.p')
     
-    most_freq_ingr = get_ingr_freq(object_file, numIng)
-    recipe_list = get_recipes(object_file, most_freq_ingr)
-    
-    for ing in most_freq_ingr:
-        print ing
+    if not args.csv:
+        numIng = 40 #we're going to use the 40 most common found ingredients
         
-    for rec in recipe_list:
-        print rec
-        print "\n"
+        most_freq_ingr = get_ingr_freq(object_file, numIng)
+        recipe_list = get_recipes(object_file, most_freq_ingr)
         
-    print ("Number of ingredients: %d\nNumber of recipes found: %d" % (numIng, len(recipe_list)))
+        for ing in most_freq_ingr:
+            print ing
+            
+        for rec in recipe_list:
+            print rec
+            print "\n"
+            
+        print ("Number of ingredients: %d\nNumber of recipes found: %d" % (numIng, len(recipe_list)))
+    else:
+        savedRecipes = recipeScraper.get_object(args.filepath + '.p')
+        allrecipes.export_csv(savedRecipes, args.filepath + '.csv')
+        
+        
