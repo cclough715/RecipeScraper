@@ -7,6 +7,39 @@ import urllib3
 import bs4
 from bs4 import BeautifulSoup
 import recipeScraper
+import csv
+
+def export_csv(recipes, filename):
+    file = open(filename, 'wt')
+    try:
+        writer = csv.writer(file)
+        writer.writerow(('Name', 'Calories', 'Carbohydrates', 'Cholesterol', 'Fat', 
+            'Fiber', 'Protein', 'Sodium'))
+        for recipe in recipes:
+            calories_perc = float(recipe.attributes[0][0]['percent'].strip('%').strip('< '))
+            if calories_perc > 0.33:
+                category = 'High'
+            elif calories_perc > 0.10:
+                category = 'Medium'
+            else:
+                category = 'Low'
+                
+            writer.writerow((
+                getattr(recipe, 'name'), 
+                category, #calories
+                recipe.attributes[0][1]['percent'].strip('%').strip('< '),#carb
+                recipe.attributes[0][2]['amount'] == 0, #cholesterol
+                recipe.attributes[0][3]['percent'].strip('%').strip('< '),#fat
+                recipe.attributes[0][4]['percent'].strip('%').strip('< '),#fiber
+                recipe.attributes[0][5]['percent'].strip('%').strip('< '),#protein
+                recipe.attributes[0][6]['percent'].strip('%').strip('< ')#sodium
+            ))
+    finally:
+        file.close()
+        
+def import_csv(filename):
+
+    return recipe
 
 def get_recipe(url):
     ''' Gets a recipe from allrecipes
@@ -65,7 +98,7 @@ def get_recipes(category):
     '''
     recipes = list()
     page = 1
-    url = 'http://www.allrecipes.com/Recipes/' +category
+    url = 'http://www.allrecipes.com/Recipes/' + category
     soup = recipeScraper.get_soup_data(url)
     has_recipes = True
     only_collections_left = False
