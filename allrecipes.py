@@ -10,35 +10,64 @@ import recipeScraper
 import csv
 
 def export_csv(recipes, filename):
-    file = open(filename, 'wt')
+    #attribute indexes
+    calories = 0
+    carbohydrates = 1
+    cholesterol = 2
+    fat = 3
+    fiber = 4
+    protein = 5
+    sodium = 6
+    
+    name = ''
+    file = open(filename, 'wb')
     try:
         writer = csv.writer(file)
-        writer.writerow(('Name', 'Calories', 'Carbohydrates', 'Cholesterol', 'Fat', 
+        writer.writerow(('Name', 'Calories', 'Carbohydrates', 'Cholesterol-Free', 'Fat', 
             'Fiber', 'Protein', 'Sodium'))
         for recipe in recipes:
-            calories_perc = float(recipe.attributes[0][0]['percent'].strip('%').strip('< '))
-            if calories_perc > 0.33:
+            #convert calories to nominal data 
+            calories_perc = float(less_than(recipe.attributes[0][calories]['percent'].strip('%')))
+            if calories_perc > 50:
+                category = 'Death'
+            elif calories_perc > 40:
+                category = 'Very High'
+            elif calories_perc > 30:
                 category = 'High'
-            elif calories_perc > 0.10:
+            elif calories_perc > 20:
                 category = 'Medium'
-            else:
+            elif calories_perc > 10:
                 category = 'Low'
-                
-            writer.writerow((
-                getattr(recipe, 'name'), 
-                category, #calories
-                recipe.attributes[0][1]['percent'].strip('%').strip('< '),#carb
-                recipe.attributes[0][2]['amount'] == 0, #cholesterol
-                recipe.attributes[0][3]['percent'].strip('%').strip('< '),#fat
-                recipe.attributes[0][4]['percent'].strip('%').strip('< '),#fiber
-                recipe.attributes[0][5]['percent'].strip('%').strip('< '),#protein
-                recipe.attributes[0][6]['percent'].strip('%').strip('< ')#sodium
-            ))
+            else:
+                category = 'Very Low'
+            
+            try:
+                row = (
+                    getattr(recipe, 'name'), 
+                    category, #calories
+                    less_than(recipe.attributes[0][carbohydrates]['percent'].strip('%')),
+                    recipe.attributes[0][cholesterol]['amount'] == '0', 
+                    less_than(recipe.attributes[0][fat]['percent'].strip('%')),
+                    less_than(recipe.attributes[0][fiber]['percent'].strip('%')),
+                    less_than(recipe.attributes[0][protein]['percent'].strip('%')),
+                    less_than(recipe.attributes[0][sodium]['percent'].strip('%'))
+                )
+            except: #skip over invalid data
+                continue
+            writer.writerow(row)
+    except:
+        print name
     finally:
         file.close()
         
+def less_than(attribute):
+    if '<' in attribute:
+        return '0'
+    else:
+        return attribute
+        
 def import_csv(filename):
-
+    #TODO: implement
     return recipe
 
 def get_recipe(url):

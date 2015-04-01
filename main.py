@@ -4,7 +4,6 @@ import allrecipes
 import cookstr
 from datetime import datetime
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Scrapes recipes from cookstr and allrecipes.')
     parser.add_argument('--cookstr', '-c',
