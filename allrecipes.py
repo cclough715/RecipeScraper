@@ -23,48 +23,40 @@ def export_csv(recipes, filename):
     file = open(filename, 'wb')
     try:
         writer = csv.writer(file)
-        writer.writerow(('Name', 'Calories', 'Carbohydrates', 'Cholesterol-Free', 'Fat', 
-            'Fiber', 'Protein', 'Sodium'))
+        #create header
+        writer.writerow(('Name', 'Calories', 'Carbohydrates', 
+                         'Cholesterol-Free', 'Fat', 
+                         'Fiber', 'Protein', 'Sodium'))
+                         
         for recipe in recipes:
-            #convert calories to nominal data 
-            calories_perc = float(less_than(recipe.attributes[0][calories]['percent'].strip('%')))
-            if calories_perc > 50:
-                category = 'Death'
-            elif calories_perc > 40:
-                category = 'Very High'
-            elif calories_perc > 30:
-                category = 'High'
-            elif calories_perc > 20:
-                category = 'Medium'
-            elif calories_perc > 10:
-                category = 'Low'
-            else:
-                category = 'Very Low'
+            #collect nutritional information
+            cal_perc = strip_percent(recipe.attributes[0][calories])
+            fat_perc = strip_percent(recipe.attributes[0][fat])
+            car_perc = strip_percent(recipe.attributes[0][carbohydrates])
+            fib_perc = strip_percent(recipe.attributes[0][fiber])
+            pro_perc = strip_percent(recipe.attributes[0][protein])
+            sod_perc = strip_percent(recipe.attributes[0][sodium])
             
             try:
                 row = (
-                    getattr(recipe, 'name'), 
-                    category, #calories
-                    less_than(recipe.attributes[0][carbohydrates]['percent'].strip('%')),
+                    getattr(recipe, 'name'), cal_perc, car_perc,
                     recipe.attributes[0][cholesterol]['amount'] == '0', 
-                    less_than(recipe.attributes[0][fat]['percent'].strip('%')),
-                    less_than(recipe.attributes[0][fiber]['percent'].strip('%')),
-                    less_than(recipe.attributes[0][protein]['percent'].strip('%')),
-                    less_than(recipe.attributes[0][sodium]['percent'].strip('%'))
+                    fat_perc, fib_perc, pro_perc, sod_perc
                 )
-            except: #skip over invalid data
-                continue
+            except: 
+                continue #skip over invalid data
+               
             writer.writerow(row)
     except:
-        print name
+        print name 
     finally:
         file.close()
         
-def less_than(attribute):
+def strip_percent(attribute):
     if '<' in attribute:
         return '0'
     else:
-        return attribute
+        return float(attribute['percent'].strip('%'))
         
 def import_csv(filename):
     #TODO: implement
@@ -98,13 +90,14 @@ def get_recipe(url):
     nutrition = soup.findAll('ul', {'id' : 'ulNutrient'})
     nutrition_info = []
     for nutrient in nutrition:
-        nutrient_info = {}
-        nutrient_info['nutrient'] = encode(nutrient.find('li', {'class' : 'categories'}).text)
-        nutrient_info['amount'] = encode(nutrient.find('span', {'id' : 'lblNutrientValue'}).text)
-        nutrient_info['percent'] = encode(nutrient.find('li', {'class' : 'percentages'}).text)
+        nutrient_info = {
+            'nutrient' : encode(nutrient.find('li', {'class' : 'categories'}).text),
+            'amount'   : encode(nutrient.find('span', {'id' : 'lblNutrientValue'}).text),
+            'percent'  : encode(nutrient.find('li', {'class' : 'percentages'}).text)
+        }
         nutrition_info.append(nutrient_info)
     dish.add_attribute(nutrition_info)
-    if len(nutrient_info) == 0:
+    if len(nutrition_info) == 0:
         print ("\tError: No nutritional information is available")
         
     #gather ingredient list for recipe
@@ -112,7 +105,7 @@ def get_recipe(url):
     for ingredient in ingredients:
         dish.add_ingredient(encode(ingredient.text))
     if len(ingredients) == 0:
-        print ("\tError: No ingredients found. Something's wrong here...")
+        print ("\tError: No ingredients found. Something is wrong here...")
 
     return dish
     
