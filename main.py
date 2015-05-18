@@ -20,8 +20,10 @@ def print_scrape_time(time):
     minutes = divmod(hours[1], 60)
     seconds = minutes[1]
     
-    print "Total scrape time: {0:.0f} days, {1:.0f} hours, {2:.0f} minutes," +
-    " {3:.0f} seconds".format(days[0], hours[0], minutes[0], seconds)
+    s = '''Total scrape time: {0:.0f} days, {1:.0f} hours, {2:.0f} minutes, 
+     {3:.0f} seconds'''
+    
+    print s.format(days[0], hours[0], minutes[0], seconds)
 
 if __name__ == '__main__':
     #create parser
