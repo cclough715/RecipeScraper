@@ -10,9 +10,10 @@ from recipeScraper import Recipe
 from collections import Counter
 import csv
 
-allrecipes_stop_words = set(['or', 'as', 'needed', 'fresh', 'to', 'taste', ', ', 
-    'chopped', 'grated', 'minced', 'shredded', 'all-purpose', 'ground', 'dried', 
-    'and', 'skinless', 'boneless', 'halves', 'active', 'dry'])
+allrecipes_stop_words = set(['or', 'as', 'needed', 'fresh', 'to', 'taste', 
+    ', ', 'chopped', 'grated', 'minced', 'shredded', 'all-purpose', 
+    'ground', 'dried', 'and', 'skinless', 'boneless', 'halves', 'active',
+    'dry'])
 
 def get_ingr_freq(recipeFile, num_most_ing):
     ''' Finds the most frequent ingredients in file with a list of Recipes
@@ -22,7 +23,8 @@ def get_ingr_freq(recipeFile, num_most_ing):
             num_most_ing: The number of frequent ingredients we're looking for
         
         Returns:
-            A dictionary with [num_most_ing] ingredients and the percentage of recipes that ingredient is found in
+            A dictionary with [num_most_ing] ingredients and the percentage of
+                recipes that ingredient is found in
     '''
     ingr_list = list()
     
@@ -45,8 +47,10 @@ def get_recipes(recipeFile, inventory):
     ''' Gets a list of recipes that only use ingredients in our inventory
     
         Args:
-            recipeFile: a serialized list of all of the recipes we're going to use
-            inventory: a list of all the ingredients we can use to make our recipes
+            recipeFile: a serialized list of all of the recipes we're going to 
+                use
+            inventory: a list of all the ingredients we can use to make our 
+                recipes
         
         Returns:
             list; A list of recipes that only use ingredients in our inventory
@@ -73,8 +77,9 @@ def get_recipes(recipeFile, inventory):
   
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Analyses recipe lists to find the most common'
-        + ' ingredients and finds recipes that use only those ingredients')
+    parser = argparse.ArgumentParser(description='Analyses recipe lists to ' \
+    'find the most common ingredients and finds recipes that use only' \
+    'those ingredients')
         
     parser.add_argument('--cookstr', '-c',
         action  = 'store_true',
@@ -103,7 +108,8 @@ if __name__ == '__main__':
             print rec
             print "\n"
             
-        print ("Number of ingredients: %d\nNumber of recipes found: %d" % (numIng, len(recipe_list)))
+        print 'Number of ingredients: {}\nNumber of recipes found: {}'.format(
+            numIng, len(recipe_list))
     else:
         savedRecipes = recipeScraper.get_object(args.filepath + '.p')
         allrecipes.export_csv(savedRecipes, args.filepath + '.csv')
