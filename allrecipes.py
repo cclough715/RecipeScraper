@@ -11,8 +11,9 @@ import csv
 
 def export_csv(recipes, filename):
     #attribute indexes
+    nutrition_info = 0
     calories = 0
-    carbohydrates = 1
+    carbs = 1
     cholesterol = 2
     fat = 3
     fiber = 4
@@ -30,17 +31,17 @@ def export_csv(recipes, filename):
                          
         for recipe in recipes:
             #collect nutritional information
-            cal_perc = strip_percent(recipe.attributes[0][calories])
-            fat_perc = strip_percent(recipe.attributes[0][fat])
-            car_perc = strip_percent(recipe.attributes[0][carbohydrates])
-            fib_perc = strip_percent(recipe.attributes[0][fiber])
-            pro_perc = strip_percent(recipe.attributes[0][protein])
-            sod_perc = strip_percent(recipe.attributes[0][sodium])
+            cal_perc = strip_percent(recipe.attributes[nutrition_info][calories])
+            fat_perc = strip_percent(recipe.attributes[nutrition_info][fat])
+            car_perc = strip_percent(recipe.attributes[nutrition_info][carbs])
+            fib_perc = strip_percent(recipe.attributes[nutrition_info][fiber])
+            pro_perc = strip_percent(recipe.attributes[nutrition_info][protein])
+            sod_perc = strip_percent(recipe.attributes[nutrition_info][sodium])
             
             try:
                 row = (
                     getattr(recipe, 'name'), cal_perc, car_perc,
-                    recipe.attributes[0][cholesterol]['amount'] == '0', 
+                    recipe.attributes[nutrition_info][cholesterol]['amount'] == '0', 
                     fat_perc, fib_perc, pro_perc, sod_perc
                 )
             except: 
@@ -72,7 +73,7 @@ def get_recipe(url):
     
     soup = recipeScraper.get_soup_data(url)
 
-    #scrape recipe information
+    #scrape recipe name and author
     try:
         name = soup.findAll('h1', {"id" : "itemTitle"})[0].text
     except IndexError:
@@ -83,7 +84,8 @@ def get_recipe(url):
     except IndexError:
         print ("\tError: Author not found")
         author = 'N/A'
-        
+    
+    #create the recipe
     dish = recipeScraper.Recipe(encode(name), encode(author))
     
     #scrape nutritional information
@@ -98,14 +100,16 @@ def get_recipe(url):
         nutrition_info.append(nutrient_info)
     dish.add_attribute(nutrition_info)
     if len(nutrition_info) == 0:
-        print ("\tError: No nutritional information is available")
+        print "\tError: No nutritional information is available for reci" \
+        "pe: {} by {}".format(name, author)
         
     #gather ingredient list for recipe
     ingredients = soup.findAll('span', {"class" : "ingredient-name"})
     for ingredient in ingredients:
         dish.add_ingredient(encode(ingredient.text))
     if len(ingredients) == 0:
-        print ("\tError: No ingredients found. Something is wrong here...")
+        print "\tError: No ingredients found. Something is wrong here..." \
+        "\nrecipe: {} by {}".format(name, author)
 
     return dish
     
@@ -113,7 +117,8 @@ def get_recipes(category):
     ''' Gets a list of all recipes found in a specific category
         
         Args:
-            category: A search term for a type of recipe (ex. 'italian', 'asian', etc.)
+            category: A search term for a type of recipe (ex. 'italian', 
+                'asian', etc.)
             
         Returns:
             A list of all recipes found within the category
@@ -122,8 +127,8 @@ def get_recipes(category):
     page = 1
     url = 'http://www.allrecipes.com/Recipes/' + category
     soup = recipeScraper.get_soup_data(url)
-    has_recipes = True
-    only_collections_left = False
+    has_recipes = True            #check if there are any recipes on the page
+    only_collections_left = False #check if there is only collections left
 
     while has_recipes:
         print ("Scraping page: %d..." % (page))
@@ -135,14 +140,17 @@ def get_recipes(category):
             #scrape each recipe on this page
             for link in recipe_links:
                 if link is not None:
-                     #ensure we don't count staff picks twice and we're not selecting a collection
-                    if('StaffPicks' not in link['id'] and 'browsedeeper' not in link['href']):
-                        recipe_url = 'http://www.allrecipes.com' + link.get('href')
-                        recipes.append(get_recipe(recipe_url))
+                     #ensure we don't count staff picks twice
+                    if('StaffPicks' not in link['id'] and    
+                        'browsedeeper' not in link['href']): #not a collection
+                        
+                        r_url = 'http://www.allrecipes.com' + link.get('href')
+                        recipes.append(get_recipe(r_url))
                         only_collections_left = False
             #get next page
             page = page + 1
-            url = 'http://allrecipes.com/Recipes/' + category +'/main.aspx?Page=' + str(page)
+            url =  'http://allrecipes.com/Recipes/' + category
+            url += '/main.aspx?Page=' + str(page)
             soup = recipeScraper.get_soup_data(url)
         else:
             has_recipes = False
